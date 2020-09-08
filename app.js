@@ -7,9 +7,6 @@ const cors = require('cors');
 
 const app = express();
 
-// const morganSetting = process.env.NODE_ENV === 'production' ? 'tiny' : 'common';
-//console.log(process.env.API_TOKEN);
-
 app.use(morgan('dev'));
 app.use(helmet());
 app.use(cors());
@@ -37,34 +34,33 @@ app.use((error, req, res, next) => {
 
 function handleGetReq(req, res) {
 	const { genre } = req.query;
-	//const { country } = req.query;
-	//const { avg_vote } = req.query;
-	let results;
-
-	// if (!genre) {
-	// 	return res
-	// 		.status(400)
-	// 		.send('Please include a genre parameter with a value that is a string.');
-	// }
-	// if (genre.match(/[0-9]/g)) {
-	// 	return res.status(400).send('Please use a value that is a string.');
-	// }
+	const { country } = req.query;
+	const { avg_vote } = req.query;
+	let results = [];
 
 	const searchResults = function () {
 		if (genre) {
-			results = MOVIEDEX.filter((movie) => movie.genre.toLowerCase() === genre);
+			results.concat(
+				MOVIEDEX.filter((movie) => movie.genre.toLowerCase() === genre)
+			);
 		}
-		if (req.query.country) {
-			results = MOVIEDEX.filter((movie) =>
-				movie.country.toLowerCase().includes(req.query.country.toLowerCase())
+		debugger;
+		if (country) {
+			results.concat(
+				MOVIEDEX.filter((movie) =>
+					movie.country.toLowerCase().includes(country.toLowerCase())
+				)
 			);
 		}
 
-		if (req.query.avg_vote) {
+		if (avg_vote) {
 			results = MOVIEDEX.filter(
 				(movie) => Number(movie.avg_vote) >= Number(req.query.avg_vote)
 			);
 		}
+		//console.log(results.flat());
+		console.log(results);
+
 		return results;
 	};
 
